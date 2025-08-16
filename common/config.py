@@ -62,6 +62,23 @@ class Config:
     FILE_PATH_BLACKLIST_STR = os.getenv("FILE_PATH_BLACKLIST", "readme,docs,doc/,.md,sample,tutorial")
     FILE_PATH_BLACKLIST = [token.strip().lower() for token in FILE_PATH_BLACKLIST_STR.split(',') if token.strip()]
 
+    # ==================== 速率控制配置 ====================
+    # GitHub API 请求速率控制
+    GITHUB_PAGE_DELAY_MIN = float(os.getenv("GITHUB_PAGE_DELAY_MIN", "2.0"))      # 页面间最小延迟(秒)
+    GITHUB_PAGE_DELAY_MAX = float(os.getenv("GITHUB_PAGE_DELAY_MAX", "5.0"))      # 页面间最大延迟(秒)
+    
+    GITHUB_FILE_DELAY_MIN = float(os.getenv("GITHUB_FILE_DELAY_MIN", "3.0"))      # 文件下载最小延迟(秒)
+    GITHUB_FILE_DELAY_MAX = float(os.getenv("GITHUB_FILE_DELAY_MAX", "8.0"))      # 文件下载最大延迟(秒)
+    
+    # Gemini API 验证速率控制
+    GEMINI_VERIFY_DELAY_MIN = float(os.getenv("GEMINI_VERIFY_DELAY_MIN", "1.0"))  # Gemini验证最小延迟(秒)
+    GEMINI_VERIFY_DELAY_MAX = float(os.getenv("GEMINI_VERIFY_DELAY_MAX", "3.0"))  # Gemini验证最大延迟(秒)
+    
+    # 主循环速率控制
+    LOOP_SLEEP_SECONDS = int(os.getenv("LOOP_SLEEP_SECONDS", "30"))               # 每轮循环结束后休眠时间(秒)
+    QUERY_BATCH_SLEEP = int(os.getenv("QUERY_BATCH_SLEEP", "5"))                  # 每N个查询后的休眠时间(秒)
+    QUERY_BATCH_SIZE = int(os.getenv("QUERY_BATCH_SIZE", "3"))                    # 每N个查询休眠一次
+
     @classmethod
     def parse_bool(cls, value: str) -> bool:
         """
@@ -176,6 +193,11 @@ logger.info(f"QUERIES_FILE: {Config.QUERIES_FILE}")
 logger.info(f"SCANNED_SHAS_FILE: {Config.SCANNED_SHAS_FILE}")
 logger.info(f"HAJIMI_CHECK_MODEL: {Config.HAJIMI_CHECK_MODEL}")
 logger.info(f"FILE_PATH_BLACKLIST: {len(Config.FILE_PATH_BLACKLIST)} items")
+logger.info(f"GITHUB_PAGE_DELAY: {Config.GITHUB_PAGE_DELAY_MIN}-{Config.GITHUB_PAGE_DELAY_MAX}s")
+logger.info(f"GITHUB_FILE_DELAY: {Config.GITHUB_FILE_DELAY_MIN}-{Config.GITHUB_FILE_DELAY_MAX}s")
+logger.info(f"GEMINI_VERIFY_DELAY: {Config.GEMINI_VERIFY_DELAY_MIN}-{Config.GEMINI_VERIFY_DELAY_MAX}s")
+logger.info(f"LOOP_SLEEP_SECONDS: {Config.LOOP_SLEEP_SECONDS}s")
+logger.info(f"QUERY_BATCH: every {Config.QUERY_BATCH_SIZE} queries sleep {Config.QUERY_BATCH_SLEEP}s")
 logger.info(f"*" * 30 + " CONFIG END " + "*" * 30)
 
 # 创建全局配置实例

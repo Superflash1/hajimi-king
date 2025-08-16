@@ -134,7 +134,7 @@ def process_item(item: Dict[str, Any]) -> tuple:
     Returns:
         tuple: (valid_keys_count, rate_limited_keys_count)
     """
-    delay = random.uniform(1, 4)
+    delay = random.uniform(Config.GITHUB_FILE_DELAY_MIN, Config.GITHUB_FILE_DELAY_MAX)
     file_url = item["html_url"]
 
     # 简化日志输出，只显示关键信息
@@ -203,7 +203,7 @@ def process_item(item: Dict[str, Any]) -> tuple:
 
 def validate_gemini_key(api_key: str) -> Union[bool, str]:
     try:
-        time.sleep(random.uniform(0.5, 1.5))
+        time.sleep(random.uniform(Config.GEMINI_VERIFY_DELAY_MIN, Config.GEMINI_VERIFY_DELAY_MAX))
 
         # 获取随机代理配置
         proxy_config = Config.get_random_proxy()
@@ -372,18 +372,18 @@ def main():
                 checkpoint.add_processed_query(normalized_q)
                 query_count += 1
 
-                checkpoint.update_scan_time()
+                # 仅保存checkpoint与轮换文件名，不在每个查询后更新扫描时间
                 file_manager.save_checkpoint(checkpoint)
                 file_manager.update_dynamic_filenames()
 
-                if query_count % 5 == 0:
-                    logger.info(f"⏸️ Processed {query_count} queries, taking a break...")
-                    time.sleep(1)
+                if query_count % Config.QUERY_BATCH_SIZE == 0:
+                    logger.info(f"⏸️ Processed {query_count} queries, taking a break for {Config.QUERY_BATCH_SLEEP}s...")
+                    time.sleep(Config.QUERY_BATCH_SLEEP)
 
             logger.info(f"🏁 Loop #{loop_count} complete - Processed {loop_processed_files} files | Total valid: {total_keys_found} | Total rate limited: {total_rate_limited_keys}")
 
-            logger.info(f"💤 Sleeping for 10 seconds...")
-            time.sleep(10)
+            logger.info(f"💤 Sleeping for {Config.LOOP_SLEEP_SECONDS} seconds...")
+            time.sleep(Config.LOOP_SLEEP_SECONDS)
 
         except KeyboardInterrupt:
             logger.info("⛔ Interrupted by user")
