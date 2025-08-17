@@ -10,9 +10,10 @@ from typing import Dict, List, Union, Any
 import google.generativeai as genai
 from google.api_core import exceptions as google_exceptions
 
-from common.Logger import logger
+# 添加项目根目录到Python路径
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-sys.path.append('../')
+from common.Logger import logger
 from common.config import Config
 from utils.github_client import GitHubClient
 from utils.file_manager import file_manager, Checkpoint, checkpoint
